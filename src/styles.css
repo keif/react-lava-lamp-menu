@@ -1,8 +1,39 @@
 /* add css styles here (optional) */
 
-.test {
-  display: inline-block;
-  margin: 2em auto;
-  border: 2px solid #000;
-  font-size: 2em;
+.LavaLampMenu {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	position: relative;
+}
+
+.item {
+	text-align: center;
+	cursor: pointer;
+	position: relative;
+	height: 20px;
+	line-height: 20px;
+	user-select: none;
+	transition: color 0.2s, background 0.2s;
+	border-radius: 10px;
+}
+.name {
+	position: relative;
+}
+
+.selected {
+	transition-delay: 0.1s;
+	color: white;
+	/*background: red;*/
+}
+
+.slider {
+	/*background: red;*/
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 40px;
+	height: 20px;
+	transition: margin 0.2s, width 0.2s;
+	border-radius: 10px;
 }
