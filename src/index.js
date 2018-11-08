@@ -7,27 +7,32 @@ export default class LavaLampMenu extends Component {
   static propTypes = {
     items: PropTypes.array.isRequired,
     selectedItemId: PropTypes.string,
-    menuPadding: PropTypes.number,
-    itemPadding: PropTypes.number,
+    itemStyle: PropTypes.object,
+    mouseOverItemStyle: PropTypes.object,
+    selectedItemStyle: PropTypes.object,
     onSelectedItemChange: PropTypes.func.isRequired,
-    selectedItemBackgroundColor: PropTypes.string
+    mouseOverItemBackgroundColor: PropTypes.string
   }
 
   state = {
-    sliderStyle: {},
+    sliderPosition: {},
     mouseOverItemId: "",
   }
 
   componentDidMount() {
-    this.getSliderStyle();
+    this.getSliderPosition();
+    window.addEventListener("resize", this.getSliderPosition);
   }
 
   componentDidUpdate() {
-    this.getSliderStyle()
+    this.getSliderPosition()
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize",  this.getSliderPosition);
   }
 
   handleItemMouseOver = id => {
-    //console.log('mouseover');
     this.setState({
       mouseOverItemId: id
     })
@@ -40,24 +45,23 @@ export default class LavaLampMenu extends Component {
   }
 
   handleItemClick = id => {
-    console.log('click');
     this.props.onSelectedItemChange(id);
   }
 
-  getSliderStyle = () => {
-    const { selectedItemId, items, menuPadding, itemPadding } = this.props;
-    const { sliderStyle } = this.state;
+  getSliderPosition = () => {
+    const { selectedItemId, items } = this.props;
+    const { sliderPosition } = this.state;
     const index = items.findIndex(({id}) => id === selectedItemId);
     const selectedItemDiv = this[this.getItemId(selectedItemId)];
-    console.log(selectedItemDiv.getBoundingClientRect())
     const {x, y, width, height} = selectedItemDiv.getBoundingClientRect();
+    const {x: menuContainerX} = this.menuContainer.getBoundingClientRect();
 
-    const sliderMarginLeft = x - menuPadding;
+    const sliderMarginLeft = x - menuContainerX;
     const sliderWidth = width //+ itemPadding*2
 
-    if (sliderMarginLeft !== sliderStyle.marginLeft || sliderWidth !== sliderStyle.width) {
+    if (sliderMarginLeft !== sliderPosition.marginLeft || sliderWidth !== sliderPosition.width) {
       this.setState({
-        sliderStyle: { 
+        sliderPosition: { 
           marginLeft: sliderMarginLeft,
           width: sliderWidth
         }
@@ -67,22 +71,34 @@ export default class LavaLampMenu extends Component {
 
   getItemId = id => `item-${id}`;
 
+  getItemStyle = id => {
+    const { itemStyle, mouseOverItemStyle, selectedItemStyle, selectedItemId } = this.props;
+    const { mouseOverItemId } = this.state;
+    let toReturn = { ...itemStyle };
+    if (id === mouseOverItemId) {
+      toReturn = {...toReturn, ...mouseOverItemStyle};
+    }
+    if (id === selectedItemId) {
+      toReturn = {...toReturn, ...selectedItemStyle};
+    }
+    return toReturn;
+  }
+
   render() {
     const {
       items,
       selectedItemId,
-      itemPadding,
-      sliderBackgroundColor,
-      selectedItemBackgroundColor
+      itemStyle,
+      sliderStyle,
+      mouseOverItemBackgroundColor
     } = this.props
-    const { sliderStyle, mouseOverItemId } = this.state;
-    console.log(this.refs);
+    const { sliderPosition, mouseOverItemId } = this.state;
 
     return (
-      <div className={styles.LavaLampMenu}>
+      <div className={styles.LavaLampMenu} ref={r => this.menuContainer = r}>
         <div className={styles.slider} style={{
-          backgroundColor: sliderBackgroundColor,
-          ...sliderStyle
+          ...sliderStyle,
+          ...sliderPosition
         }}></div>
         {items.map(({id, name}) => {
           const isSelected = id === selectedItemId;
@@ -94,11 +110,7 @@ export default class LavaLampMenu extends Component {
               onMouseOver={() => this.handleItemMouseOver(id)}
               onMouseLeave={() => this.handleMouseLeave(id)}
               key={id}
-              style={{
-                paddingLeft: itemPadding,
-                paddingRight: itemPadding,
-                background: isSelected || isMousedOver ? selectedItemBackgroundColor : ''
-              }}
+              style={this.getItemStyle(id)}
               className={`${styles.item} ${isSelected ? styles.selected : ''}`}>
                 <div className={styles.name}>{name}</div>
             </div>
@@ -110,9 +122,13 @@ export default class LavaLampMenu extends Component {
 }
 
 LavaLampMenu.defaultProps = {
-  menuPadding: 12,
-  itemPadding: 8,
-  sliderBackgroundColor: 'blue',
-  selectedItemBackgroundColor: 'rgba(0,0,255,0.1)'
+  sliderStyle: {
+  },
+  itemStyle: {
+  },
+  mouseOverItemStyle: {
+  },
+  selectedItemStyle: {
+  }
 };
 
