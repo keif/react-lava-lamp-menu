@@ -1,10 +1,10 @@
 # react-lava-lamp-menu
 
 > A menu component with a lava lamp effect when selecting a menu option.
+> Refactored as a functional component for a separate elastic menu example
 
-[![NPM](https://img.shields.io/npm/v/react-lava-lamp-menu.svg)](https://www.npmjs.com/package/react-lava-lamp-menu) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-## Demo
+## Demo (class-based component - original demo)
 https://jbccollins.github.io/react-lava-lamp-menu/
 
 ## Install
@@ -21,7 +21,7 @@ import React, { Component } from 'react'
 import LavaLampMenu from 'react-lava-lamp-menu'
 
 class Example extends Component {
-  
+
   state = {
   	selectedItemId: "item1"
   }
